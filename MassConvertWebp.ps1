@@ -2,22 +2,18 @@
 #This script will execute a command recursively on all folders and subfolders
 #This script will display the filename of every file processed
 #set the source folder for the images
-$srcfolder = "C:\Users\perab\OneDrive\Desktop\AGM 2018"
+$srcfolder = "<SourceFolder>"
 #set the destination folder for the images
-$destfolder = "C:\Users\perab\OneDrive\Desktop\Webp Test"
+$destfolder = "<DestinationFolder>"
 #set the ImageMagick command
 $im_convert_exe = "magick"
+#Image Extensions to process
+$src_ext = @(".png",".jpg")
 #set the destination (output) image format
 $dest_ext = "webp"
-#set the ImageMagick command options
-$options = ""
-#set the log file path and name
-$logfile = "C:\temp\convert.log"
-$fp = New-Item -ItemType file $logfile -force
-#The following lines allow the display of all files that are being processed
-$count=0
+#ArrayList that will hold all the ImageMagick commands
 $commands=[System.Collections.ArrayList]@()
-foreach ($srcitem in $(Get-ChildItem $srcfolder -recurse | where {$_.extension -in ".png",".jpg"}))
+foreach ($srcitem in $(Get-ChildItem $srcfolder -recurse | where {$_.extension -in $src_ext}))
 {
 
 $srcname = $srcitem.fullname
@@ -33,16 +29,7 @@ if (-not (test-path $destpath))
 #the following line defines the contents of the convert command line
 $cmdline =  "$($im_convert_exe) `"$($srcname)`" `"$($destname)`""
 $commands.Add($cmdline)
-continue
-#the following line runs the command
-invoke-expression -command $cmdline  
-$destitem = Get-item $destname
-$info = [string]::Format( "{0} `t {1} `t {2} `t {3} `t {4} `t {5}", 
-$count, 
-$partial, $srcname, $destname, $srcitem.Length ,  $destitem.Length)
-echo $info
-Add-Content $fp $info
-$count=$count+1
 } 
 
-$commands | ForEach-Object -Parallel { invoke-expression -command "$_" } -ThrottleLimit 20
+#the following line runs the commands in parallel
+$commands | ForEach-Object -Parallel { echo "processing: ($_)"; invoke-expression -command "$_";} -ThrottleLimit 100
