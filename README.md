@@ -8,7 +8,7 @@ Use script `iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI"`
 
 ## How to use
 ### Edit Parameters:
-$srcfolder: Source Folder
-$destfolder: Destination Folder
-$src_ext: Extensions you want to convert
-$dest_ext: File output format
+$srcfolder: Source Folder  
+$destfolder: Destination Folder  
+$src_ext: Extensions you want to convert  
+$dest_ext: File output format  
